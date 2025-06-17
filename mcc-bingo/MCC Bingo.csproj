@@ -1,0 +1,14 @@
+<Project Sdk="Godot.NET.Sdk/4.4.0-rc">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>MCCBingo</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MCCBingoCommon\MCCBingoCommon.csproj" />
+    <ProjectReference Include="..\src\Avalonia\MCCStatTracker\MCCBingoCommon\MCCBingoCommon.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+</Project>
