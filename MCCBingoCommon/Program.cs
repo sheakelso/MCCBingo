@@ -46,5 +46,6 @@ public enum ConnectResult
 public enum Mode
 {
     Normal,
-    DynaballOnly
+    DynaballOnly,
+    ParkourWarriorOnly
 }

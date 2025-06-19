@@ -20,7 +20,7 @@ public class NormalBingoTaskProvider : IBingoTaskProvider
             switch (random.Next(0, 2))
             {
                 case 0:
-                    task = new ParkourMedalsTask(random);
+                    task = new ParkourWarriorBankMedalsTask(random);
                     tasks[i] = task;
                     break;
                 case 1:
@@ -36,7 +36,7 @@ public class NormalBingoTaskProvider : IBingoTaskProvider
 
 public class DynaballBingoTaskProvider : IBingoTaskProvider
 {
-    public Type[] DynaballTaskTypes = 
+    static readonly Type[] DynaballTaskTypes = 
     [
         typeof(DynaballWinGamesTask),
         typeof(DynaballDestroyBlocksTask),
@@ -57,12 +57,36 @@ public class DynaballBingoTaskProvider : IBingoTaskProvider
     }
 }
 
+public class ParkourWarriorBingoTaskProvider : IBingoTaskProvider
+{
+    static readonly Type[] ParkourWarriorTaskTypes = 
+    [
+        typeof(ParkourWarriorCompletionsTask),
+        typeof(ParkourWarriorBankMedalsTask),
+        typeof(ParkourWarriorCompleteObstaclesTask),
+        typeof(ParkourWarriorEliminatePlayersTask),
+        typeof(ParkourWarriorReachLeapTask),
+        typeof(ParkourWarriorWinLeapsTask)
+    ];
+    
+    public IBingoTask[] GetTasks(Random random)
+    {
+        IBingoTask[] tasks = new IBingoTask[25];
+        for (int i = 0; i < tasks.Length; i++)
+        {
+            tasks[i] = (IBingoTask)ParkourWarriorTaskTypes[random.Next(0, ParkourWarriorTaskTypes.Length)].GetConstructor([typeof(Random)])?.Invoke([random]);
+        }
+        return tasks;
+    }
+}
+
 public class BingoBoard
 {
     public static Dictionary<Mode, IBingoTaskProvider> TaskProviders = new ()
     {
         { Mode.Normal, new NormalBingoTaskProvider() },
-        { Mode.DynaballOnly, new DynaballBingoTaskProvider()}
+        { Mode.DynaballOnly, new DynaballBingoTaskProvider() },
+        { Mode.ParkourWarriorOnly, new ParkourWarriorBingoTaskProvider() }
     };
     public readonly IBingoTask[] Tasks;
     
