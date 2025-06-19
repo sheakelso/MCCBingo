@@ -10,6 +10,8 @@ public partial class MainMenu : Node
 {
     [Export] public Button StartButton;
     [Export] public TextEdit UsernameField;
+    [Export] public OptionButton ModeOptions;
+    [Export] public SpinBox SeedField;
     [Export] public RichTextLabel ErrorLabel;
     
     MCCBingoClient _client;
@@ -17,6 +19,11 @@ public partial class MainMenu : Node
     public override void _Ready()
     {
         StartButton.Pressed += OnStartButtonPressed;
+
+        foreach (string mode in Enum.GetNames(typeof(Mode)))
+        {
+            ModeOptions.AddItem(mode);
+        }
     }
 
     public void OnStartButtonPressed()
@@ -52,6 +59,7 @@ public partial class MainMenu : Node
             switch (c)
             {
                 case ConnectResult.Success:
+                    BingoSheet.CurrentBingoInfo = new BingoInfo((int)SeedField.Value, (Mode)ModeOptions.Selected);
                     ErrorLabel.CallDeferred(RichTextLabel.MethodName.SetText, "Connected to server");
                     GetTree().CallDeferred(SceneTree.MethodName.ChangeSceneToFile, "res://Scenes/BingoScene.tscn");
                     return;

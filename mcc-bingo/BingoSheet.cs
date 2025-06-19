@@ -17,6 +17,8 @@ public class BingoTask
 
 public partial class BingoSheet : Node
 {
+    public static BingoInfo CurrentBingoInfo;
+
     [Export] public PackedScene BingoSpacePrefab;
 
     private MCCBingoClient _client;
@@ -41,7 +43,7 @@ public partial class BingoSheet : Node
         _client = MCCBingoClient.Instance;
         _client.CommandReceived += OnCommandReceived;
 
-        _client.SendCommand(Command.RequestBoard, "");
+        _client.SendCommand(Command.RequestBoard, JsonConvert.SerializeObject(CurrentBingoInfo));
     }
 
     void ReturnToMenu()

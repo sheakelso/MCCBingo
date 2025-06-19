@@ -1,45 +1,88 @@
+using MCCBingoCommon;
 using MCCBingoServer.Tasks;
 using MCCStatTracker;
 
 namespace MCCBingoServer;
 
+public interface IBingoTaskProvider
+{
+    public IBingoTask[] GetTasks(Random random);
+}
+
+public class NormalBingoTaskProvider : IBingoTaskProvider
+{
+    public IBingoTask[] GetTasks(Random random)
+    {
+        IBingoTask[] tasks = new IBingoTask[25];
+        for (int i = 0; i < tasks.Length; i++)
+        {
+            IBingoTask task = new PlayGamesTask(random);
+            switch (random.Next(0, 2))
+            {
+                case 0:
+                    task = new ParkourMedalsTask(random);
+                    tasks[i] = task;
+                    break;
+                case 1:
+                    task = new PlayGamesTask(random);
+                    tasks[i] = task;
+                    break;
+            }
+            tasks[i] = task;
+        }
+        return tasks;
+    }
+}
+
+public class DynaballBingoTaskProvider : IBingoTaskProvider
+{
+    public Type[] DynaballTaskTypes = 
+    [
+        typeof(DynaballWinGamesTask),
+        typeof(DynaballDestroyBlocksTask),
+        typeof(DynaballDestroySpawnersTask),
+        typeof(DynaballEliminatePlayersTask),
+        typeof(DynaballPlaceBlocksTask),
+        typeof(DynaballPlayersStuckTask)
+    ];
+    
+    public IBingoTask[] GetTasks(Random random)
+    {
+        IBingoTask[] tasks = new IBingoTask[25];
+        for (int i = 0; i < tasks.Length; i++)
+        {
+            tasks[i] = (IBingoTask)DynaballTaskTypes[random.Next(0, DynaballTaskTypes.Length)].GetConstructor([typeof(Random)])?.Invoke([random]);
+        }
+        return tasks;
+    }
+}
+
 public class BingoBoard
 {
-    public readonly IBingoTask[] Tasks = new IBingoTask[25];
+    public static Dictionary<Mode, IBingoTaskProvider> TaskProviders = new ()
+    {
+        { Mode.Normal, new NormalBingoTaskProvider() },
+        { Mode.DynaballOnly, new DynaballBingoTaskProvider()}
+    };
+    public readonly IBingoTask[] Tasks;
     
     private readonly MCCPlayerTracker _playerTracker;
     private readonly TrackedPlayer _trackedPlayer;
     
     private readonly List<int> _tasksCompleted = new ();
     
-    public BingoBoard(MCCPlayerTracker playerTracker, TrackedPlayer trackedPlayer)
+    private readonly Random _random;
+    
+    public BingoBoard(MCCPlayerTracker playerTracker, TrackedPlayer trackedPlayer, BingoInfo bingoInfo)
     {
+        _random = new Random(bingoInfo.Seed);
         _playerTracker = playerTracker;
         _trackedPlayer = trackedPlayer;
-        for (int i = 0; i < Tasks.Length; i++)
+        Tasks = TaskProviders[bingoInfo.Mode].GetTasks(_random);
+        foreach (var task in Tasks)
         {
-            Tasks[i] = CreateTask();
+            task.InitializeStatistics(playerTracker, trackedPlayer);
         }
-    }
-    
-    private IBingoTask CreateTask()
-    {
-        Random random = new Random();
-        IBingoTask task = new PlayGamesTask();
-        task.InitializeStatistics(_playerTracker, _trackedPlayer);
-        switch (random.Next(0, 2))
-        {
-            case 0:
-                task = new ParkourMedalsTask();
-                task.InitializeStatistics(_playerTracker, _trackedPlayer);
-                return task;
-            case 1:
-                task = new PlayGamesTask();
-                task.InitializeStatistics(_playerTracker, _trackedPlayer);
-                return task;
-                
-        }
-        return task;
     }
 
     public void InitializeTasks()

@@ -8,7 +8,9 @@ public enum Command
     DisconnectClient,
     RequestBoard,
     BingoBoard,
-    TasksCompleted
+    TasksCompleted,
+    RequestModeOptions,
+    ModeOptions
 }
 
 public struct CommandPacket
@@ -23,8 +25,26 @@ public struct CommandPacket
     }
 }
 
+public class BingoInfo
+{
+    public int Seed  { get; set; }
+    public Mode Mode { get; set; }
+
+    public BingoInfo(int seed, Mode mode)
+    {
+        Seed = seed;
+        Mode = mode;
+    }
+}
+
 public enum ConnectResult
 {
     Success,
     PlayerDoesNotExist
+}
+
+public enum Mode
+{
+    Normal,
+    DynaballOnly
 }

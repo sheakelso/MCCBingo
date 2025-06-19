@@ -4,7 +4,7 @@ namespace MCCBingoServer.Tasks;
 
 public class PlayGamesTask : IBingoTask
 {
-    public string Title { get; }
+    public string Title { get; set;  }
 
     private int _initialGames;
     private bool _initialized;
@@ -14,9 +14,8 @@ public class PlayGamesTask : IBingoTask
     private readonly (string, Rotation) _gamesStat;
     private readonly string _statKey;
 
-    public PlayGamesTask()
+    public PlayGamesTask(Random random)
     {
-        Random random = new Random();
         Game game = (Game)random.Next(0, Enum.GetValues(typeof(Game)).Length);
         _gamesStat = (GlobalUtils.GameStatNames[game] + "_games_played", Rotation.LIFETIME);
         _statKey = MCCPlayerTracker.GetStatisticString(_gamesStat);

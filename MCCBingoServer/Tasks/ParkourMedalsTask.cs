@@ -4,7 +4,7 @@ namespace MCCBingoServer.Tasks;
 
 public class ParkourMedalsTask : IBingoTask
 {
-    public string Title { get; }
+    public string Title { get; set; }
 
     private int _initialMedals;
     private bool _initialized;
@@ -14,9 +14,8 @@ public class ParkourMedalsTask : IBingoTask
     private readonly (string, Rotation) _medalsStat = ("pw_solo_total_medals_banked", Rotation.LIFETIME);
     private readonly string _statKey = MCCPlayerTracker.GetStatisticString(("pw_solo_total_medals_banked", Rotation.LIFETIME));
 
-    public ParkourMedalsTask()
+    public ParkourMedalsTask(Random random)
     {
-        Random random = new Random();
         _medalsNeeded = random.Next(10, 21);
         Title = $"Earn {_medalsNeeded} medals in Parkour Warrior Dojo";
     }

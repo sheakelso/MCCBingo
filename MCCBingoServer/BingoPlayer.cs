@@ -101,14 +101,14 @@ public class BingoPlayer
                 break;
             case Command.RequestBoard:
                 Console.WriteLine($"{Username} requested a board.");
-                CreateBoard();
+                CreateBoard(JsonConvert.DeserializeObject<BingoInfo>(packet.Message));
                 break;
         }
     }
 
-    void CreateBoard()
+    void CreateBoard(BingoInfo bingoInfo)
     {
-        _board = new BingoBoard(_tracker, _trackedPlayer);
+        _board = new BingoBoard(_tracker, _trackedPlayer, bingoInfo);
     }
 
     public void Disconnect()
